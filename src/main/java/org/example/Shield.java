@@ -24,7 +24,11 @@ public class Shield extends Item {
      * @param name the name of the shield
      * @param strengthBonus the strength bonus provided by the shield
      */
-    public Shield(final String name, final int strengthBonus) {
-        super(name, strengthBonus, 0);  // Strength only
+    public Shield(final String name, final int strengthBonus, final int craftBonus) {
+        super(name, strengthBonus, craftBonus);
+    }
+
+    public int getCraftBonus() {
+        return craftBonus;
     }
 }

@@ -54,6 +54,28 @@ public class Player extends Character {
         inventory.remove(item);
     }
 
+    public int getHealth() {
+        return health;
+    }
+
+    public int getStrength() {
+        return strength;
+    }
+
+    public void takeDamage(int damage) {
+        if (damage <= 0) {
+            System.out.println(name + " takes no damage.");
+            return;
+        }
+
+        System.out.println(name + " takes damage: " + damage);
+        health = Math.max(health - damage, 0);
+    }
+
+
+
+
+
     /**
      * Returns the list of items currently in the player's inventory.
      *
@@ -61,6 +83,15 @@ public class Player extends Character {
      */
     public List<Item> getInventory() {
         return inventory;
+    }
+
+    /**
+     * Checks if the player is still alive.
+     *
+     * @return true if health is greater than 0, false otherwise
+     */
+    public boolean isAlive() {
+        return health > 0;
     }
 
     /**
@@ -82,4 +113,23 @@ public class Player extends Character {
     public void pickUpItem(Item item) {
         inventory.add(item);
     }
+
+
+
+    public int getEffectiveCraft() {
+        int totalCraft = this.craft;
+
+        // Ensure items or buffs are properly considered
+        for (Item item : inventory) {
+            if (item instanceof Shield) {
+                totalCraft += ((Shield) item).getCraftBonus(); // Adjust craft for defense
+            }
+        }
+
+        return totalCraft;
+    }
+
+
+
+
 }

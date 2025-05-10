@@ -36,13 +36,53 @@ public class Fight implements Action {
      * The implementation of the battle logic will depend on the specific mechanics
      * defined for the combat.
      *
-     * <p>This method currently contains a placeholder for the actual battle logic,
-     * which can be implemented as needed (e.g., comparing strength, health, and craft).</p>
+     * <p>This method contains basic battle logic where the player and the monster take turns
+     * attacking each other. The player's strength and craft, along with the monster's strength,
+     * are used to determine damage.</p>
      */
     @Override
     public void execute() {
-        // battle logic
+        System.out.println("You have encountered " + monster.getName() + "!");
+
+        int playerDamage = player.getStrength();
+        int rawMonsterDamage = monster.getStrength();
+        int reducedMonsterDamage = Math.max(0, rawMonsterDamage - player.getEffectiveCraft());
+
+        // Exit early if no damage can be done
+        if (playerDamage == 0 && reducedMonsterDamage == 0) {
+            System.out.println("Neither the player nor the monster can deal damage. The fight ends in a draw.");
+            return;
+        }
+
+        System.out.println("Calculated player damage: " + playerDamage);
+        System.out.println("Calculated reduced monster damage: " + reducedMonsterDamage);
+
+
+        while (player.getHealth() > 0 && monster.getHealth() > 0) {
+            // Player attacks
+            monster.takeDamage(playerDamage);
+            System.out.println("You dealt " + playerDamage + " damage to the " + monster.getName());
+            System.out.println(monster.getName() + " has " + monster.getHealth() + " health left.");
+
+            if (monster.getHealth() <= 0) {
+                System.out.println("You defeated the " + monster.getName() + "!");
+                break;
+            }
+
+            // Monster attacks
+            player.takeDamage(reducedMonsterDamage);
+            System.out.println(monster.getName() + " dealt " + reducedMonsterDamage + " damage to you.");
+            System.out.println("You have " + player.getHealth() + " health left.");
+
+            if (player.getHealth() <= 0) {
+                System.out.println("You have been defeated by the " + monster.getName() + "!");
+                break;
+            }
+        }
     }
+
+
+
 
     /**
      * Returns a string representation of the fight action.

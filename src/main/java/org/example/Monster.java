@@ -54,6 +54,10 @@ public class Monster {
         return health;
     }
 
+    public void takeDamage(int damage) {
+        health -= damage;
+        if (health < 0) health = 0; // Ensure health doesn't go negative
+    }
     /**
      * Gets the name of the monster.
      *

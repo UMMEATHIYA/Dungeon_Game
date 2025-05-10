@@ -26,7 +26,6 @@ public class TextUI {
      *
      * @param d the {@link Dungeon} object representing the game world
      */
-
     public void play(final Dungeon d) {
         while (!d.isFinished()) {
             print(d);
@@ -98,18 +97,10 @@ public class TextUI {
     }
 
     /**
-     * Displays a message indicating the user made an invalid choice.
-     */
-    public void displayInvalidChoiceMessage() {
-        System.out.println("Invalid choice, please try again.");
-    }
-
-    /**
      * Displays the current chamber's name, items, and available doors.
      *
      * @param dungeon the current {@link Dungeon} instance
      */
-
     public void displayDungeon(final Dungeon dungeon) {
         Chamber currentChamber = dungeon.getCurrentChamber();
         System.out.println("You are in the " + currentChamber.getName()
@@ -131,35 +122,23 @@ public class TextUI {
             Chamber otherChamber = door.getOtherChamber(currentChamber);
             System.out.println("- " + otherChamber.getName());
         }
+
+        // Display monsters guarding doors, if any
+        for (Door door : currentChamber.getDoors()) {
+            Monster monster = door.getMonster();
+            if (monster != null && monster.getHealth() > 0) {
+                System.out.println("Monster guarding door: " + monster.getName());
+            }
+        }
     }
 
-    /**
-     * Prompts the player with main action options and
-     * returns the selected option as a string.
-     *
-     * @return the player's choice as a string ("1", "2", or "3")
-     */
-    public String getPlayerChoice() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("What would you like to do?");
-        System.out.println("1. Pick up an item");
-        System.out.println("2. Move through a door");
-        System.out.println("3. Fight a monster");
-        System.out.print("Enter your choice (1-3): ");
-
-        return scanner.nextLine();
+    public void displayInvalidChoiceMessage() {
+        System.out.println("Invalid choice, please try again.");
     }
 
-
-    /**
-     * Displays a victory message when the player completes the dungeon.
-     */
     public void displayVictory() {
-        System.out.println("Congratulations! You have reached "
-                + "the goal chamber and won the game!");
+        System.out.println("Congratulations! You have reached the goal chamber and won the game!");
     }
-
-
 
 
     /**
@@ -170,22 +149,32 @@ public class TextUI {
      * @return the {@link Action} selected by the player
      */
     private Action ask(final Dungeon d) {
+        List<Action> actions = d.getActions();
+
+        // Add a fight action if there's a monster in the room
+        Chamber currentChamber = d.getCurrentChamber();
+        for (Door door : currentChamber.getDoors()) {
+            Monster monster = door.getMonster();
+            if (monster != null && monster.getHealth() > 0) {
+                actions.add(new Fight((Player) d.getPlayer(), monster));
+
+            }
+        }
+
+        // Present the options to the player
         StringBuilder s = new StringBuilder();
         s.append("Here are your options:\n");
-        List<Action> actions = d.getActions();
         for (int i = 0; i < actions.size(); i++) {
             Action a = actions.get(i);
             s.append("\t" + i + ": " + a.toString() + "\n");
         }
         System.out.println(s.toString());
 
-        BufferedReader reader = new BufferedReader(new
-                InputStreamReader(System.in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         try {
             int command = Integer.parseInt(reader.readLine());
             return actions.get(command);
-        } catch (IOException | NumberFormatException
-                 | IndexOutOfBoundsException e) {
+        } catch (IOException | NumberFormatException | IndexOutOfBoundsException e) {
             System.out.println("Invalid input. Try again.");
             return new PrintError(d, e);
         }
